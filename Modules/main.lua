@@ -14,54 +14,61 @@ local MiscTab = Window:MakeTab({
 })
 
 -- ============================================
--- CODE NHẬP TỰ ĐỘNG (NHÚNG TRỰC TIẾP)
+-- LOAD MODULE TỪ GITHUB
 -- ============================================
-local function RedeemAllCodes()
-    local codesList = {
-        "Wax", "Roof", "Nectar", "Crawlers", "Connoisseur", 
-        "Bopmaster", "38217", "ClubBean", "GumdropsForScience", "BeesBuzz123"
-    }
+local CodeModule = nil
 
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local Events = ReplicatedStorage:WaitForChild("Events")
-    local remote = Events:WaitForChild("PromoCodeEvent")
+-- Thử load module
+spawn(function()
+    local success, result = pcall(function()
+        -- Link RAW của file nhapcode.lua trên GitHub của bạn
+        local link = "https://raw.githubusercontent.com/Luanbets/BSS/main/Modules/nhapcode.lua"
+        return loadstring(game:HttpGet(link))()
+    end)
     
-    print("Bắt đầu nhập code...")
-
-    for i, code in ipairs(codesList) do
-        local success, err = pcall(function()
-            remote:FireServer(code)
-        end)
-        
-        if success then
-            print("✓ Nhập thành công: " .. code)
-        else
-            warn("✗ Lỗi code " .. code .. ": " .. tostring(err))
-        end
-        
-        task.wait(0.3)
+    if success then
+        CodeModule = result
+        print("✓ Module loaded thành công!")
+        OrionLib:MakeNotification({
+            Name = "Thành công!", 
+            Content = "Module đã sẵn sàng!", 
+            Time = 3
+        })
+    else
+        warn("✗ Lỗi load module: " .. tostring(result))
+        OrionLib:MakeNotification({
+            Name = "Lỗi!", 
+            Content = "Không load được module!", 
+            Time = 5
+        })
     end
-    
-    print("Hoàn tất!")
-end
+end)
 
 -- NÚT BẤM
 MiscTab:AddButton({
     Name = "Nhập Tất Cả Code",
     Callback = function()
-        OrionLib:MakeNotification({
-            Name = "Đang chạy...", 
-            Content = "Hệ thống đang nhập code...", 
-            Time = 3
-        })
-        
-        RedeemAllCodes()
-        
-        OrionLib:MakeNotification({
-            Name = "Thành công!", 
-            Content = "Đã nhập xong tất cả code!", 
-            Time = 5
-        })
+        if CodeModule and CodeModule.RedeemAll then
+            OrionLib:MakeNotification({
+                Name = "Đang chạy...", 
+                Content = "Hệ thống đang nhập code...", 
+                Time = 3
+            })
+            
+            CodeModule.RedeemAll()
+            
+            OrionLib:MakeNotification({
+                Name = "Thành công!", 
+                Content = "Đã nhập xong tất cả code!", 
+                Time = 5
+            })
+        else
+            OrionLib:MakeNotification({
+                Name = "Lỗi!", 
+                Content = "Module chưa load! Hãy đợi vài giây.", 
+                Time = 5
+            })
+        end
     end    
 })
 
