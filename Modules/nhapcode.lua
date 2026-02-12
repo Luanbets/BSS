@@ -1,23 +1,23 @@
--- Danh sách Code
-local codesList = {
-    "Wax", "Roof", "Nectar", "Crawlers", "Connoisseur", 
-    "Bopmaster", "38217", "ClubBean", "GumdropsForScience", "BeesBuzz123"
-}
+local module = {} -- Tạo một cái bảng chứa chức năng
 
--- Hàm xử lý (Function)
-local function RedeemAll()
+-- Hàm nhập code nằm trong bảng này
+function module.RedeemAll()
+    local codesList = {
+        "Wax", "Roof", "Nectar", "Crawlers", "Connoisseur", 
+        "Bopmaster", "38217", "ClubBean", "GumdropsForScience", "BeesBuzz123"
+    }
+
     local remote = game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PromoCodeEvent")
     
-    for i, code in ipairs(codesList) do
-        -- Gửi lệnh nhập code
-        remote:FireServer(code) 
-        -- Nếu game bắt buộc dùng unpack table thì dùng dòng dưới:
-        -- remote:FireServer(unpack({code})) 
+    -- Thông báo nhỏ (nếu muốn)
+    print("Bắt đầu nhập code từ Module...")
 
-        -- In ra console (F9) để kiểm tra ngầm
-        print("Đang nhập code: " .. code)
-        
-        -- Chờ xíu để không bị kick
+    for i, code in ipairs(codesList) do
+        remote:FireServer(code)
         task.wait(0.2)
     end
+    
+    print("Đã nhập xong!")
 end
+
+return module -- QUAN TRỌNG: Phải trả về cái bảng này để main.lua nhận được
