@@ -6,8 +6,7 @@ local Window = OrionLib:MakeWindow({Name = "My Script Hub", HidePremium = false,
 
 -- 3. Load File Logic từ GitHub (Sử dụng link RAW từ file AutoCode.lua bạn tạo ở Bước 1)
 -- Thay đường link bên dưới bằng link Raw file AutoCode.lua của bạn
-local LogicUrl = "https://raw.githubusercontent.com/Luanbets/REPO/main/AutoCode.lua"
-local AutoCodeModule = loadstring(game:HttpGet(LogicUrl))()
+local LogicUrl = "https://raw.githubusercontent.com/Luanbets/BSS/main/Modules/AutoCode.lua"local AutoCodeModule = loadstring(game:HttpGet(LogicUrl))()
 
 -- 4. Tạo Tab và Các chức năng
 local Tab = Window:MakeTab({
