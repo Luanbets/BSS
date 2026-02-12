@@ -1,43 +1,68 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
--- 1. TẠO CỬA SỔ
-local Window = OrionLib:MakeWindow({Name = "My BSS Hub", HidePremium = false, SaveConfig = false, ConfigFolder = "BSS_Test"})
-
-local MiscTab = Window:MakeTab({
-	Name = "Misc / Codes",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
+local Window = OrionLib:MakeWindow({
+    Name = "My BSS Hub", 
+    HidePremium = false, 
+    SaveConfig = false, 
+    ConfigFolder = "BSS_Test"
 })
 
--- 2. TẢI MODULE TỪ GITHUB VỀ (QUAN TRỌNG)
--- Lưu ý: Link phải là link RAW từ GitHub của bạn
-local LinkModule = "https://raw.githubusercontent.com/Luanbets/BSS/refs/heads/main/Modules/nhapcode.lua"
+local MiscTab = Window:MakeTab({
+    Name = "Misc / Codes",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
--- Sử dụng pcall để bắt lỗi nếu link sai hoặc mạng lag
-local success, CodeModule = pcall(function()
-    return loadstring(game:HttpGet(LinkModule))()
-end)
+-- ============================================
+-- CODE NHẬP TỰ ĐỘNG (NHÚNG TRỰC TIẾP)
+-- ============================================
+local function RedeemAllCodes()
+    local codesList = {
+        "Wax", "Roof", "Nectar", "Crawlers", "Connoisseur", 
+        "Bopmaster", "38217", "ClubBean", "GumdropsForScience", "BeesBuzz123"
+    }
 
-if not success then
-    warn("Lỗi tải module: " .. tostring(CodeModule))
-    OrionLib:MakeNotification({Name = "Lỗi!", Content = "Không tải được Module Nhập Code!", Time = 5})
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local Events = ReplicatedStorage:WaitForChild("Events")
+    local remote = Events:WaitForChild("PromoCodeEvent")
+    
+    print("Bắt đầu nhập code...")
+
+    for i, code in ipairs(codesList) do
+        local success, err = pcall(function()
+            remote:FireServer(code)
+        end)
+        
+        if success then
+            print("✓ Nhập thành công: " .. code)
+        else
+            warn("✗ Lỗi code " .. code .. ": " .. tostring(err))
+        end
+        
+        task.wait(0.3)
+    end
+    
+    print("Hoàn tất!")
 end
 
--- 3. TẠO NÚT BẤM GỌI HÀM
+-- NÚT BẤM
 MiscTab:AddButton({
-	Name = "Nhập Tất Cả Code",
-	Callback = function()
-        if CodeModule and CodeModule.RedeemAll then
-            -- Gọi hàm RedeemAll() nằm trong cái module đã tải về
-            OrionLib:MakeNotification({Name = "Đang chạy...", Content = "Hệ thống đang nhập code...", Time = 3})
-            
-            CodeModule.RedeemAll() -- <--- CHỖ NÀY NÓ GỌI HÀM TRONG FILE NHAPCODE.LUA
-            
-            OrionLib:MakeNotification({Name = "Thành công", Content = "Đã chạy xong!", Time = 5})
-        else
-            OrionLib:MakeNotification({Name = "Lỗi", Content = "Module chưa được tải hoặc lỗi code!", Time = 5})
-        end
-  	end    
+    Name = "Nhập Tất Cả Code",
+    Callback = function()
+        OrionLib:MakeNotification({
+            Name = "Đang chạy...", 
+            Content = "Hệ thống đang nhập code...", 
+            Time = 3
+        })
+        
+        RedeemAllCodes()
+        
+        OrionLib:MakeNotification({
+            Name = "Thành công!", 
+            Content = "Đã nhập xong tất cả code!", 
+            Time = 5
+        })
+    end    
 })
 
 OrionLib:Init()
