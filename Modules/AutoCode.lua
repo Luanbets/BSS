@@ -1,38 +1,40 @@
-local module = {}
+local module = {} -- 1. Tạo cái vỏ hộp
 
+-- 2. Định nghĩa hàm nằm TRONG cái hộp đó
 function module.RedeemAll()
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local remote = ReplicatedStorage:WaitForChild("Events"):WaitForChild("PromoCodeEvent")
+    -- Kiểm tra xem Event có tồn tại không để tránh lỗi
+    local eventFolder = ReplicatedStorage:WaitForChild("Events", 5)
+    local remote = eventFolder and eventFolder:WaitForChild("PromoCodeEvent", 5)
 
-    -- Danh sách Code (Bạn có thể cập nhật list này trên GitHub dễ dàng về sau)
+    if not remote then
+        warn("Không tìm thấy PromoCodeEvent!")
+        return
+    end
+
     local codesList = {
         "Wax", "Roof", "Nectar", "Crawlers", "Connoisseur", 
         "Bopmaster", "38217", "ClubBean", "GumdropsForScience", "BeesBuzz123"
     }
 
-    print("=== BẮT ĐẦU NHẬP CODE ===")
-    
-    -- Gửi thông báo nhỏ (nếu có thư viện UI) hoặc in ra console
+    -- Thông báo bắt đầu
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Auto Code";
-        Text = "Đang bắt đầu nhập code...";
+        Text = "Bắt đầu nhập...";
         Duration = 3;
     })
 
     for i, code in ipairs(codesList) do
-        -- Kiểm tra nhân vật còn sống hoặc kết nối trước khi fire (tuỳ chọn)
-        print("Đang nhập: " .. code)
         remote:FireServer(code)
-        task.wait(0.8) -- Delay an toàn
+        task.wait(0.8)
     end
 
-    print("=== HOÀN TẤT! ===")
-    
+    -- Thông báo xong
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Auto Code";
-        Text = "Đã nhập xong tất cả code!";
+        Text = "Đã nhập xong!";
         Duration = 5;
     })
 end
 
-return module
+return module -- 3. QUAN TRỌNG: Phải trả cái hộp ra ngoài
